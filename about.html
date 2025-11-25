@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About YumRush</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1200&auto=format&fit=crop') no-repeat center center/cover;
+      color: #fff;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .container {
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      max-width: 800px;
+      border-radius: 14px;
+      box-shadow: 0 16px 48px rgba(34,197,94,0.45), 0 4px 32px rgba(0,0,0,0.35);
+      padding: 32px 24px;
+      position: relative;
+      z-index: 1;
+      margin: 40px auto;
+      text-align: left;
+    }
+    h1 {
+      color: #22c55e;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 2px 2px 12px rgba(34,197,94,0.25);
+    }
+    ul {
+      margin-top: 8px;
+      margin-bottom: 15px;
+      padding-left: 22px;
+    }
+    .actions {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      margin-top: 28px;
+      margin-bottom: 10px;
+    }
+    .action-btn {
+      background-color: #22c55e;
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 600;
+      box-shadow: 0 2px 12px rgba(34,197,94,0.25);
+      transition: background 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-btn:hover {
+      background-color: #1e9e4a;
+      transform: scale(1.07);
+    }
+    .count {
+      background: #e7a074;
+      color: #fff;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 15px;
+      margin-left: 4px;
+    }
+    .back-btn {
+      background-color: #22c55e;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 24px;
+      box-shadow: 0 2px 12px rgba(34,197,94,0.25);
+      transition: background 0.2s;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .back-btn:hover {
+      background-color: #1e9e4a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;">
+      <h1 style="margin:0;">YumRush</h1>
+      <div class="logo" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#22c55e,#06b6d4);border-radius:12px;box-shadow:0 2px 12px rgba(34,197,94,0.25);">
+        <span style="font-size:28px;">🍽️</span>
+      </div>
+      <div class="food-logo" style="width:44px;height:44px;display:flex;align-items:center;">
+      </div>
+    </div>
+    <p>
+      YumRush is a modern food delivery web application designed to make ordering your favorite meals fast, easy, and enjoyable. 
+      Browse our menu, add items to your cart, and checkout—all without needing to log in!
+    </p>
+    <p>
+      <strong>Features:</strong>
+      <ul>
+        <li>Wide selection of delicious food</li>
+        <li>Easy-to-use interface</li>
+        <li>Customer reviews and ratings</li>
+        <li>Fast checkout process</li>
+        <li>Contact and support options</li>
+      </ul>
+    </p>
+    <p>
+      For more information, contact us at <strong>hello@yumrush.example</strong>.
+    </p>
+    <div class="actions">
+      <button class="action-btn" id="followBtn">Follow <span class="count" id="followCount">0</span></button>
+      <button class="action-btn" id="subscribeBtn">Subscribe <span class="count" id="subscribeCount">0</span></button>
+      <button class="action-btn" id="likeBtn">👍 Like <span class="count" id="likeCount">0</span></button>
+    </div>
+    <div id="notifyModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.65);z-index:999;align-items:center;justify-content:center;">
+      <div style="background:#fff;color:#333;padding:32px 24px;border-radius:14px;box-shadow:0 8px 32px rgba(34,197,94,0.25);max-width:350px;text-align:center;">
+        <h2 style="color:#22c55e;margin-bottom:18px;">Thank you for following!</h2>
+        <p>You will be notified for more menus and updates.</p>
+        <button onclick="closeNotify()" style="margin-top:18px;background:#22c55e;color:#fff;border:none;padding:10px 22px;border-radius:8px;cursor:pointer;font-size:16px;">OK</button>
+      </div>
+    </div>
+    <button class="back-btn" onclick="backToContact()">Back to Contact</button>
+    <button class="back-btn" onclick="window.location.href='index.html'" style="margin-top:10px;">Back to Shop</button>
+  </div>
+  <script>
+    function backToContact() {
+      window.location.href = 'contact.html';
+    }
+    function showNotify() {
+      document.getElementById('notifyModal').style.display = 'flex';
+    }
+    function closeNotify() {
+      document.getElementById('notifyModal').style.display = 'none';
+    }
+    function getCount(key) {
+      return Number(localStorage.getItem(key) || "0");
+    }
+    function setCount(key, val) {
+      localStorage.setItem(key, val);
+      document.getElementById(key + "Count").textContent = val;
+    }
+    ["follow", "subscribe", "like"].forEach(function(type) {
+      document.getElementById(type + "Btn").addEventListener("click", function() {
+        let key = type;
+        let val = getCount(key) + 1;
+        setCount(key, val);
+        if (key === "follow") showNotify();
+      });
+      setCount(type, getCount(type));
+    });
+  </script>
+</body>
+</html>

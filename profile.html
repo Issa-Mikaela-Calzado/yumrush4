@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Profile - YumRush</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f172a;--muted:#94a3b8;--text:#e5e7eb;--brand:#22c55e;--brand2:#06b6d4;--radius:18px}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#0b1224,#0f172a);color:var(--text);font-family:Inter,system-ui,sans-serif;padding:20px}
+    a{color:inherit;text-decoration:none}
+    
+    .container{max-width:600px;margin:0 auto}
+    
+    header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid rgba(148,163,184,.15)}
+    .back-btn{background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+    
+    .profile-card{background:#0b1224;border:1px solid rgba(148,163,184,.15);border-radius:var(--radius);padding:24px;text-align:center}
+    
+    .profile-pic{width:140px;height:140px;border-radius:50%;background:#081022;margin:0 auto 16px;overflow:hidden;border:4px solid var(--brand);display:grid;place-items:center}
+    .profile-pic img{width:100%;height:100%;object-fit:cover}
+    .profile-pic span{color:var(--muted);font-size:3rem}
+    
+    .change-pic-btn{background:var(--brand);color:#04150f;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;margin-bottom:20px}
+    .change-pic-btn:hover{background:#1ea853}
+    
+    input[type="file"]{display:none}
+    
+    .info-section{text-align:left;margin-top:20px}
+    .info-row{margin:14px 0;padding:10px;background:#081022;border-radius:8px}
+    .info-label{font-size:0.9rem;color:var(--muted)}.info-value{font-weight:700;margin-top:4px}
+    
+    .orders-section{margin-top:32px}
+    .order-card{background:#0e1730;border:1px solid rgba(148,163,184,.15);border-radius:12px;padding:14px;margin-bottom:12px}
+    .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .order-id{font-weight:700;color:var(--brand)}
+    .order-status{padding:4px 10px;border-radius:6px;font-size:0.85rem;font-weight:700;background:#fbbf24;color:#333}
+    .order-status.delivered{background:#22c55e;color:#fff}
+    .order-status.delivering{background:#06b6d4;color:#fff}
+    .order-items{font-size:0.9rem;color:var(--muted);margin:8px 0}
+    .order-total{text-align:right;font-weight:700;color:var(--brand)}
+    
+    .logout-btn{background:#ef4444;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-top:20px}
+    .logout-btn:hover{background:#dc2626}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <button class="back-btn" onclick="window.location.href='/'">← Back</button>
+      <h1 style="margin:0;flex:1">My Profile</h1>
+    </header>
+
+    <div class="profile-card">
+      <div class="profile-pic">
+        <span id="avatarEmoji">👤</span>
+      </div>
+      <input type="file" id="picInput" accept="image/*">
+      <button class="change-pic-btn" onclick="document.getElementById('picInput').click()">Change Photo</button>
+      
+      <div class="info-section">
+        <div class="info-row">
+          <div class="info-label">Name</div>
+          <div class="info-value" id="profileName">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Email</div>
+          <div class="info-value" id="profileEmail">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Phone</div>
+          <div class="info-value" id="profilePhone">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Address</div>
+          <div class="info-value" id="profileAddress">—</div>
+        </div>
+      </div>
+
+      <div class="orders-section">
+        <h2 style="color:var(--brand);margin-bottom:14px">Your Orders</h2>
+        <div id="ordersList"></div>
+      </div>
+
+      <button class="logout-btn" onclick="logoutUser()">Log Out</button>
+    </div>
+  </div>
+
+  <script>
+    async function apiFetch(url, opts = {}) {
+      const res = await fetch(url, Object.assign({ credentials: 'include', headers: { 'Content-Type': 'application/json' } }, opts));
+      const json = await res.json().catch(()=>({}));
+      if (!res.ok) throw json;
+      return json;
+    }
+
+    async function loadProfile() {
+      try {
+        const j = await apiFetch('/api/me');
+        if (!j.user) {
+          window.location.href = '/';
+          return;
+        }
+        
+        // Display user info
+        document.getElementById('profileName').textContent = j.user.name || '—';
+        document.getElementById('profileEmail').textContent = j.user.email || '—';
+        document.getElementById('profilePhone').textContent = j.user.phone || '—';
+        document.getElementById('profileAddress').textContent = j.user.address || '—';
+
+        // Display orders
+        const orders = j.user.orders || [];
+        const ordersList = document.getElementById('ordersList');
+        
+        if (orders.length === 0) {
+          ordersList.innerHTML = '<p style="color:var(--muted)">No orders yet.</p>';
+          return;
+        }
+
+        ordersList.innerHTML = '';
+        for (const ord of orders) {
+          const card = document.createElement('div');
+          card.className = 'order-card';
+          const statusClass = ord.status === 'delivered' ? 'delivered' : ord.status === 'delivering' ? 'delivering' : '';
+          const items = ord.items ? ord.items.map(it => `${it.name} x${it.qty}`).join(', ') : '—';
+          card.innerHTML = `
+            <div class="order-header">
+              <div class="order-id">Order #${ord.id}</div>
+              <div class="order-status ${statusClass}">${ord.status || 'processing'}</div>
+            </div>
+            <div class="order-items">${items}</div>
+            <div style="font-size:0.85rem;color:var(--muted);margin:8px 0">${new Date(ord.createdAt).toLocaleDateString()}</div>
+            <div class="order-total">₱${Number(ord.total || 0).toFixed(2)}</div>
+          `;
+          ordersList.appendChild(card);
+        }
+      } catch (err) {
+        console.error('loadProfile error', err);
+        window.location.href = '/';
+      }
+    }
+
+    async function logoutUser() {
+      await apiFetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

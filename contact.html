@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Us - YumRush</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1200&auto=format&fit=crop') no-repeat center center/cover;
+      color: #fff;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .container {
+      background-color: rgba(255,255,255,0.95);
+      color: #333;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(255,126,95,0.25), 0 2px 24px rgba(0,0,0,0.25);
+      padding: 32px 24px;
+      position: relative;
+      z-index: 1;
+      margin: 40px auto;
+      text-align: left;
+    }
+    h1 {
+      color: #ff7e5f;
+      margin-bottom: 20px;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+    button.back-btn {
+      background-color: #ff7e5f;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+      box-shadow: 0 2px 12px rgba(255,126,95,0.25);
+      transition: background 0.2s;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    button.back-btn:hover {
+      background-color: #e06a4f;
+    }
+    .social-link {
+      color: #22c55e;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .social-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <center><h1>📞Contact Us📞</h1></center>
+    <p>If you have any questions or need assistance, feel free to reach out to us:</p>
+
+    <ul>
+      <li><strong>Email:</strong> hello@yumrush.example</li>
+      <li><strong>Phone:</strong> (02) 555-0199</li>
+      <li><strong>Address:</strong> 88 Luna St., Metro City</li>
+      <li><strong>Business Hours:</strong> Daily 10:00–22:00</li>
+      <li><strong>Follow updates on:</strong> <a class="social-link" href="about.html" target="_blank" rel="noopener">@yumrush</a></li>
+    </ul>
+
+    <button class="back-btn" onclick="backToTerms()">Back to Terms and Conditions</button>
+  </div>
+  <script>
+    function backToTerms() {
+      window.location.href = 'terms.html';
+    }
+  </script>
+</body>
+</html>

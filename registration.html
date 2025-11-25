@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register - YumRush</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1200&auto=format&fit=crop') 
+                  no-repeat center center/cover;
+      color: #fff;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 0;
+    }
+
+    .reg-container {
+      background: rgba(255,255,255,0.97);
+      color: #333;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(34,197,94,0.25), 0 2px 24px rgba(0,0,0,0.25);
+      padding: 32px 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    h2 {
+      color: #22c55e;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #f7fafc;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg,#22c55e,#06b6d4);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .error {
+      color: #ef4444;
+      text-align: center;
+      margin-bottom: 10px;
+      display: none;
+      font-weight: 700;
+    }
+
+    .success {
+      color: #22c55e;
+      text-align: center;
+      margin-bottom: 10px;
+      display: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="reg-container">
+
+    <form id="regForm">
+      <h2>Create Account</h2>
+
+      <label for="name">Full Name</label>
+      <input id="name" required>
+
+      <label for="email">Email</label>
+      <input id="email" type="email" required>
+
+      <label for="password">Password</label>
+      <input id="password" type="password" required>
+
+      <label for="phone">Phone (optional)</label>
+      <input id="phone">
+
+      <label for="address">Address (optional)</label>
+      <input id="address">
+
+      <div id="regError" class="error"></div>
+      <div id="regSuccess" class="success"></div>
+
+      <button type="submit">Register</button>
+    </form>
+
+  </div>
+
+  <script>
+    const form = document.getElementById("regForm");
+    const errorBox = document.getElementById("regError");
+    const successBox = document.getElementById("regSuccess");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      errorBox.style.display = "none";
+      successBox.style.display = "none";
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const pass = document.getElementById("password").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address = document.getElementById("address").value.trim();
+
+      try {
+        const res = await fetch("/api/register", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, pass, phone, address })
+        });
+
+        const data = await res.json();
+
+        if (res.status === 201) {
+          successBox.textContent = "Account created! Redirecting...";
+          successBox.style.display = "block";
+
+          setTimeout(() => {
+            window.location.href = "/index.html";
+          }, 1200);
+
+        } else {
+          errorBox.textContent = data.error || "Registration failed.";
+          errorBox.style.display = "block";
+        }
+
+      } catch (err) {
+        errorBox.textContent = "Network error — check backend.";
+        errorBox.style.display = "block";
+      }
+    });
+  </script>
+
+</body>
+</html>
+

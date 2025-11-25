@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YumRush • Product</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f172a;--muted:#94a3b8;--text:#e5e7eb;--brand:#22c55e;--brand2:#06b6d4;--radius:18px;--border:1px solid rgba(148,163,184,.15)}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#0b1224,#0f172a);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    header{display:flex;gap:12px;align-items:center;padding:14px 20px;position:sticky;top:0;background:rgba(15,23,42,.7);backdrop-filter:blur(8px);border-bottom:var(--border)}
+    .logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:grid;place-items:center}
+    .wrap{max-width:1100px;margin:20px auto;padding:0 20px}
+    .card{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;background:#0b1224;border:var(--border);border-radius:var(--radius);padding:18px}
+    @media (max-width:800px){.card{grid-template-columns:1fr}}
+    .thumb{aspect-ratio:5/3;background:#081022;border-radius:14px;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .price{font-weight:800}
+    .btn{border:0;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:700}
+    .primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#04150f}
+    .ghost{background:#0b1224;border:1px solid rgba(148,163,184,.25);color:var(--text)}
+    .muted{color:var(--muted)}
+    ul.ingredients{margin-top:10px;padding-left:20px;color:var(--muted)}
+    .stars{display:flex;gap:5px;margin-top:10px;cursor:pointer}
+    .star{font-size:22px;color:var(--muted);transition:color .2s}
+    .star.active{color:gold}
+    textarea{resize:vertical;min-height:60px;padding:8px;border-radius:8px;border:1px solid rgba(148,163,184,.25);background:#0b1224;color:var(--text)}
+    input{padding:8px;border-radius:8px;border:1px solid rgba(148,163,184,.25);background:#0b1224;color:var(--text)}
+    #orderForm {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #orderForm button[type="submit"] {
+      align-self: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🍽️</div>
+    <a href="index.html"><strong>YumRush</strong></a>
+    <div style="margin-left:auto"><a class="btn ghost" href="index.html">← Back to menu</a></div>
+  </header>
+
+  <div class="wrap" id="viewProduct"></div>
+
+  <script>
+    const PRODUCTS = [
+      {id:1, name:'Tocino', price:45.00, img:'FOOD/tocino.jpg', desc:'Sweet, savory cured pork, fried egg, and fluffy garlic rice', ingredients:['Pork shoulder or belly', 'Anisado wine', 'Sugar', 'Saltpeter (Prague powder/Curing salt)', 'Soy sauce', 'Garlic']},
+      {id:2, name:'Sisig', price:60.00, img:'FOOD/sisig.webp', desc:'Crispy pork cheek, citrusy calamansi, savory onion, and a kick of chili.', ingredients:['Pork cheek and ears', 'Red onion', 'Chili peppers (siling labuyo)', 'Calamansi juice', 'Mayonnaise', 'Soy sauce']},
+      {id:3, name:'Adobong Baboy', price:50.00, img:'FOOD/adobo.jpg', desc:'Stewed pork cubes, Tender chicken and pork, tangy vinegar, garlic, and cracked peppercorns', ingredients:['Chicken or pork', 'Soy sauce', 'Vinegar', 'Garlic', 'Bay leaf', 'Black peppercorns']},
+      {id:4, name:'Menudo', price:45.00, img:'FOOD/menudo.jpg', desc:'Stewed pork cubes, sweet potato, savory tomato sauce, and garbanzo beans.', ingredients:['Pork cubes', 'Pork liver', 'Potatoes', 'Carrots', 'Garbanzo beans', 'Raisins', 'Tomato sauce']},
+      {id:5, name:'Fried Chicken', price:50.00, img:'FOOD/FRIED.jpg', desc:'Crispy golden skin, juicy marinated meat, and savory gravy dip.', ingredients:['Chicken pieces', 'Flour', 'Eggs', 'Salt', 'Black pepper', 'Garlic powder', 'Oil for frying']},
+      {id:6, name:'Burger Steak', price:50.00, img:'FOOD/steak.jpg', desc:'Thinly sliced beef, earthy mushrooms, rich brown sauce, and buttered rice.', ingredients:['Thinly sliced beef (sirloin or tenderloin)', 'Mushrooms', 'Soy sauce', 'Calamansi or lemon juice', 'Beef broth', 'Butter']},
+      {id:7, name:'Lumpia Shanghai', price:9.00, img:'FOOD/lumpia.jpg', desc:'Crispy deep-fried wrapper, savory ground meat, and sweet chili dipping sauce.', ingredients:['Ground pork or beef', 'Carrots', 'Cabbage', 'Onion', 'Lumpia wrappers', 'Dipping sauce']},
+      {id:8, name:'Fried Hotdog', price:15.00, img:'FOOD/hot.jpg', desc:'Sweet pink hotdog, lightly scored ends.', ingredients:['Sweet pink hotdog', 'Oil for frying', 'Sugar', 'Water']},
+      {id:9, name:'Sunnyside Up Egg', price:15.00, img:'FOOD/egg.jpg', desc:'Sunnyside Up Egg', ingredients:['Egg', 'Cooking oil or butter', 'Salt', 'Black pepper']},
+      {id:10, name:'Salami', price:12.00, img:'FOOD/sal.jpg', desc:'Thinly sliced cured meat, slightly spicy flavor, and toasted bread.', ingredients:['Cured processed meat slices', 'Oil for cooking']},
+      {id:11, name:'Chicken Pastel', price:20.00, img:'FOOD/paste.jpg', desc:'Creamy white sauce, tender chicken chunks, mushrooms, and a flaky crust.', ingredients:['Chicken chunks', 'Mushrooms', 'Carrots', 'Potatoes', 'All-purpose cream', 'Pie crust']},
+      {id:12, name:'Fried Fish', price:35.00, img:'FOOD/fish.jpg', desc:'Golden crispy skin, moist white meat, and a tangy soy dipping sauce.', ingredients:['Whole fish (tilapia or galunggong)', 'Salt', 'Pepper', 'Oil for frying']},
+      {id:13, name:'Ginataang Langka', price:25.00, img:'FOOD/lang.jpg', desc:'Young jackfruit, creamy coconut milk, shrimp paste, and a hint of chili.', ingredients:['Young jackfruit (langka)', 'Coconut milk', 'Shrimp paste (bagoong)', 'Ginger', 'Chili']},
+      {id:14, name:'Adobong Sitaw', price:25.00, img:'FOOD/sit.jpg', desc:'String beans, savory soy sauce, vinegar, and tender pork pieces.', ingredients:['String beans (sitaw)', 'Pork belly', 'Soy sauce', 'Vinegar', 'Garlic']},
+      {id:15, name:'Afritada', price:50.00, img:'FOOD/afr.jpg', desc:'Chicken or pork, rich tomato sauce, carrots, potatoes, and bell peppers.', ingredients:['Chicken or pork', 'Tomato sauce', 'Potatoes', 'Carrots', 'Bell peppers']},
+      {id:16, name:'Chicken Fillet', price:25.00, img:'FOOD/fill.jpg', desc:'Breaded chicken breast, golden brown exterior, and a side of mayonnaise.', ingredients:['Chicken breast fillet', 'Flour', 'Breadcrumbs', 'Egg', 'Seasoning']},
+      {id:17, name:'Ginisang Chopsuey', price:20.00, img:'FOOD/chop.jpg', desc:'Sautéed mixed vegetables, quail eggs, chicken strips, and a light sauce.', ingredients:['Cabbage', 'Carrots', 'Cauliflower', 'Bagiuo beans', 'Quail eggs', 'Chicken stock']},
+      {id:18, name:'Barbeque', price:45.00, img:'FOOD/bbq.jpg', desc:'Sweet, savory cured pork, fried egg, and fluffy garlic rice', ingredients:['Pork shoulder', 'Soy sauce', 'Banana ketchup', 'Lemon-lime soda', 'Brown sugar', 'Skewers']},
+      {id:19, name:'Dinuguan', price:50.00, img:'FOOD/dig.jpg', desc:'Rich savory pork blood stew, tender meat, and a hint of vinegar.', ingredients:['Pork blood', 'Pork offal (intestines, ears)', 'Vinegar', 'Garlic', 'Chili peppers']},
+      {id:20, name:'Mechado', price:50.00, img:'FOOD/mech.jpg', desc:'Beef chunks, rich tomato sauce, potatoes, carrots, and bell peppers', ingredients:['Beef chunks', 'Tomato sauce', 'Potatoes', 'Carrots', 'Bay leaf', 'Soy sauce']},
+      {id:21, name:'Monggo', price:20.00, img:'FOOD/mong.jpg', desc:'Hearty mung bean soup, bitter melon leaves, and crispy pork flakes.', ingredients:['Mung beans (monggo)', 'Pork rind or shrimp', 'Malunggay leaves', 'Onion', 'Garlic']},
+      {id:22, name:'Chicken Curry', price:35.00, img:'FOOD/chick.jpg', desc:'Tender chicken, spicy yellow curry, potatoes, and thick coconut milk', ingredients:['Chicken pieces', 'Curry powder', 'Coconut milk', 'Potatoes', 'Carrots', 'Bell peppers']},
+      {id:23, name:'Pinakbet', price:25.00, img:'FOOD/bet.jpg', desc:'Mixed local vegetables, savory shrimp paste, and tender squash.', ingredients:['Squash (kalabasa)', 'Eggplant', 'Okra', 'Ampalaya (bitter gourd)', 'Shrimp paste (bagoong)']},
+      {id:24, name:'Tortang Talong', price:20.00, img:'FOOD/tal.jpg', desc:'Pan-fried eggplant omelet, savory ground meat, and a sweet banana ketchup.', ingredients:['Grilled eggplant', 'Eggs', 'Ground meat (optional)', 'Onion', 'Salt and pepper']},
+      {id:25, name:'Pancit Bihon', price:20.00, img:'FOOD/pan.jpg', desc:'Thin rice noodles, mixed vegetables, meat strips, and citrusy calamansi.', ingredients:['Bihon noodles', 'Chicken or pork strips', 'Cabbage', 'Carrots', 'Soy sauce', 'Calamansi']},
+      {id:26, name:'Bicol Express', price:50.00, img:'FOOD/bic.jpg', desc:'Spicy pork stew, creamy coconut milk, and lots of chili peppers.', ingredients:['Pork cubes', 'Coconut milk', 'Shrimp paste (bagoong)', 'Lots of chili peppers', 'Garlic']},
+      {id:27, name:'Fish Steak', price:35.00, img:'FOOD/ste.jpg', desc:'Pan-fried fish slices, tangy soy-calamansi sauce, and sautéed onions', ingredients:['Fish slices (tuna or milkfish)', 'Soy sauce', 'Calamansi juice', 'Onion rings', 'Black pepper']},
+      {id:28, name:'Fish Fillet', price:35.00, img:'FOOD/fill.jpg', desc:'Crispy fried fish chunks, creamy tartare sauce, and a hint of lemon.', ingredients:['White fish fillet', 'Batter mix', 'Oil for frying', 'Tartar sauce']},
+      {id:29, name:'Ginisang Kalabasa ', price:20.00, img:'FOOD/kal.jpg', desc:'Sautéed squash, creamy coconut milk, shrimp, and malunggay leaves.', ingredients:['Squash (kalabasa)', 'Shrimp (hipon)', 'Coconut milk', 'Onion', 'Garlic']},
+      {id:30, name:'Embutido', price:12.00, img:'FOOD/emb.jpg', desc:'Steamed meat loaf, sweet ham, cheese, and a hard-boiled egg center.', ingredients:['Ground pork', 'Raisins', 'Carrots', 'Hard-boiled eggs', 'Cheese', 'Hotdog slices']},
+      {id:31, name:'Longganisa', price:12.00, img:'FOOD/long.jpg', desc:'Garlicky sweet sausage, pan-fried, and served with a vinegar dip.', ingredients:['Ground pork', 'Garlic', 'Vinegar', 'Sugar', 'Hog casing (optional)', 'Seasoning']},
+      {id:32, name:'Chicken Cordon Bleu', price:35.00, img:'FOOD/bleu.jpg', desc:'Rolled chicken breast, melted ham and cheese center, and a golden breading.', ingredients:['Chicken breast', 'Ham slice', 'Cheese slice', 'Breadcrumbs', 'Egg']},
+      {id:33, name:'Crispy Pata', price:60.00, img:'FOOD/pat.jpg', desc:'Deep-fried pork leg, crackling crispy skin, and a savory dipping sauce.', ingredients:['Pork leg (pata)', 'Star anise', 'Bay leaf', 'Soy sauce', 'Vinegar', 'Oil for deep frying']},
+      {id:34, name:'Aros Caldo', price:45.00, img:'FOOD/aro.jpg', desc:'Thick savory rice porridge, shredded chicken, toasted garlic, and a boiled egg.', ingredients:['Glutinous rice (malagkit)', 'Chicken or beef', 'Ginger', 'Onion', 'Garlic', 'Safflower (kasubha)']},
+      {id:35, name:'Crispy Chicken Skin', price:30.00, img:'FOOD/skin.jpg', desc:' Deep-fried chicken skin, addictive crunch, and a salty seasoning.', ingredients:['Chicken skin', 'Flour mixture', 'Seasoning', 'Oil for frying']},
+      {id:36, name:'Ukoy', price:20.00, img:'FOOD/ukoy.jpg', desc:'Crispy deep-fried shrimp fritter, mixed vegetables, and a vinegar-garlic dip.', ingredients:['Shrimp', 'Shredded squash or sweet potato', 'Flour', 'Water', 'Salt and pepper']},
+      {id:37, name:'Kare-Kare', price:45.00, img:'FOOD/kar.jpg', desc:'Rich peanut sauce, tender oxtail, tripe, and salted shrimp paste on the side.', ingredients:['Oxtail and tripe', 'Peanut butter', 'Ground toasted rice', 'Annatto powder (achuete)', 'Vegetables', 'Bagoong']},
+      {id:38, name:'Spam Fried Pork Chop', price:45.00, img:'FOOD/spam.jpg', desc:'Salty seared spam, juicy fried pork chop, and fluffy rice.', ingredients:['Pork chop slices', 'Spam slices', 'Soy sauce', 'Calamansi juice', 'Oil for frying']},
+      {id:39, name:'Bopis', price:30.00, img:'FOOD/bop.jpg', desc:'Minced pork lung and heart, tangy vinegar, carrots, and spicy chili heat.', ingredients:['Pork lungs and heart (minced)', 'Carrots', 'Bell pepper', 'Onion', 'Garlic', 'Vinegar', 'Chili peppers']},
+      {id:40, name:'Lumpiang Tugue', price:7.00, img:'FOOD/tog.jpg', desc:'Thinly sliced beef, earthy mushrooms, rich brown sauce, and buttered rice.', ingredients:['Mung bean sprouts (togue)', 'Carrots', 'Tofu', 'Onion', 'Lumpia wrappers', 'Dipping sauce']},
+      {id:41, name:'Miki Bihon', price:20.00, img:'FOOD/mik.jpg', desc:'Mixed egg and rice noodles, savory broth, chicken strips, and shredded vegetables.', ingredients:['Miki (fresh egg noodles)', 'Bihon (thin rice noodles)', 'Chicken broth', 'Shrimp', 'Cabbage', 'Carrots']},
+      {id:42, name:'Sarciadong Isda', price:35.00, img:'FOOD/sar.jpg', desc:'Fried fish, rich scrambled egg and tomato sauce, and a garlic-onion base.', ingredients:['Fried whole fish', 'Tomatoes', 'Eggs', 'Onion', 'Garlic', 'Fish sauce (patis)']},
+      {id:43, name:'Ginisang Sayote', price:20.00, img:'FOOD/say.jpg', desc:'Sautéed chayote slices, tender shrimp, mild seasoning, and a hint of garlic', ingredients:['Chayote (sayote)', 'Shrimp or pork', 'Onion', 'Garlic', 'Water or broth', 'Fish sauce (patis)']},
+      {id:44, name:'Adobong Manok', price:35.00, img:'FOOD/adb.jpg', desc:'Tender chicken pieces, tangy vinegar, soy sauce, and aromatic garlic cloves.', ingredients:['Chicken pieces', 'Soy sauce', 'Vinegar', 'Garlic', 'Bay leaf', 'Black peppercorns']},
+      {id:45, name:'Pork Steak', price:50.00, img:'FOOD/por.jpg', desc:'Pan-seared pork slices, tangy soy-calamansi sauce, and sautéed onion rings', ingredients:['Pork shoulder or loin slices', 'Soy sauce', 'Calamansi or lemon juice', 'Onion rings', 'Black pepper']},
+      {id:46, name:'Humba', price:50.00, img:'FOOD/hum.jpg', desc:'Fall-apart pork belly, sweet-savory sauce, fermented black beans, and a boiled egg.', ingredients:['Pork belly', 'Soy sauce', 'Vinegar', 'Brown sugar', 'Fermented black beans (tausi)', 'Banana blossoms']},
+      {id:47, name:'Tinulang Manok', price:50.00, img:'FOOD/til.jpg', desc:'Clear ginger broth, tender chicken, green papaya wedges, and chili leaves.', ingredients:['Chicken pieces', 'Ginger', 'Green papaya', 'Chili leaves (dahon ng sili)', 'Water', 'Fish sauce (patis)']},
+      {id:48, name:'Bulalo', price:70.00, img:'FOOD/bul.jpg', desc:'Rich beef shank soup, melting bone marrow, tender corn, and crisp cabbage.', ingredients:['Beef shanks with bone marrow', 'Corn on the cob', 'Pechay or cabbage', 'Onion', 'Water', 'Salt and pepper']},
+      {id:49, name:'Palabok', price:20.00, img:'FOOD/pal.jpg', desc:'Thick rice noodles, savory shrimp gravy, smoked fish flakes, and crispy pork cracklings.', ingredients:['Thick rice noodles', 'Shrimp gravy (palabok sauce)', 'Smoked fish flakes (tinapa)', 'Shrimp', 'Pork cracklings (chicharon)']},
+      {id:50, name:'Dinakdakan', price:40.00, img:'FOOD/din.jpg', desc:' Grilled pork mask and brain, sour calamansi, red onion, and spicy chili peppers.', ingredients:['Grilled pig\'s mask (maskara) and ears', 'Pig brain or mayonnaise', 'Onion', 'Calamansi juice', 'Chili peppers']}
+    ];
+
+    function getCart(){ return JSON.parse(localStorage.getItem('fdCart')||'[]'); }
+    function setCart(x){ localStorage.setItem('fdCart', JSON.stringify(x)); }
+
+    const params = new URLSearchParams(location.search);
+    const id = Number(params.get('id'));
+    const view = params.get('view');
+    const isBuyNow = params.get('buynow') === '1';
+    const mount = document.getElementById('viewProduct');
+
+    function money(n){ return '₱'+n.toFixed(2); }
+
+
+    if(view==='checkout'){
+      const items = isBuyNow
+        ? JSON.parse(localStorage.getItem('fdBuyNow') || '[]').map(it=>({ ...it, p: PRODUCTS.find(p=>p.id===it.id) || {} }))
+        : getCart().map(it=>({ ...it, p: PRODUCTS.find(p=>p.id===it.id) || {} }));
+      const subtotal = items.reduce((a,b)=>a + (b.p.price||0)*b.qty,0);
+      const shipping = subtotal>0 ? 30 : 0; 
+      const total = subtotal + shipping;
+      mount.innerHTML = `
+        <div style="max-width:430px;margin:30px auto;background:#fff;border-radius:18px;box-shadow:0 2px 16px rgba(0,0,0,0.08);padding:0;">
+          <div style="padding:18px 16px 10px 16px;border-bottom:1px solid #eee;">
+            <div style="font-weight:700;color:#ef4444;font-size:1.1rem;margin-bottom:6px;">
+              <span id="checkoutName"></span> (<span id="checkoutPhone"></span>)
+            </div>
+            <div style="color:#555;font-size:0.98rem;margin-bottom:10px;" id="checkoutAddress"></div>
+          </div>
+          <div style="padding:16px;border-bottom:1px solid #eee;">
+            <div style="font-weight:600;color:#333;margin-bottom:8px;">${items[0]?.p ? items[0].p.name : ''}</div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <img src="${items[0]?.p.img || ''}" alt="" style="width:60px;height:60px;border-radius:10px;object-fit:cover;">
+              <div>
+                <div style="font-size:1rem;font-weight:700;color:#ef4444;">₱${items[0]?.p.price || '0.00'}</div>
+                <div style="font-size:0.95rem;color:#555;">x${items[0]?.qty || 1}</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:16px;border-bottom:1px solid #eee;">
+            <div style="font-size:0.98rem;color:#333;margin-bottom:8px;">Shipping Fee</div>
+            <div style="background:#e6f7ee;padding:8px 12px;border-radius:8px;color:#19c37d;font-weight:600;">
+              Standard Local <span style="float:right;color:#333;">₱${shipping}</span>
+            </div>
+            <div style="font-size:0.95rem;color:#555;margin-top:4px;">You'll Get Your Order Soon</div>
+          </div>
+          <div style="padding:16px;border-bottom:1px solid #eee;">
+            <div style="font-size:0.98rem;color:#333;margin-bottom:8px;">Payment Methods</div>
+            <select id="paymentMethod" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #eee;font-size:1rem;">
+              <option value="cod">Cash on Delivery</option>
+              <option value="gcash">GCash</option>
+            </select>
+          </div>
+          <div style="padding:16px;">
+            <div style="font-size:1.1rem;font-weight:700;">Total Payment: <span style="color:#ef4444;">₱${total}</span></div>
+            <button class="btn primary" type="submit" id="placeOrderBtn" style="width:100%;margin-top:18px;font-size:1.1rem;">Place Order</button>
+            <div id="orderMsg" class="muted" style="margin-top:10px;display:none">🎉 Order placed! A confirmation email is on the way.</div>
+          </div>
+        </div>
+      `;
+
+      const currentUser = localStorage.getItem('fdCurrentUser');
+      if(currentUser){
+        const users = JSON.parse(localStorage.getItem('fdUsers') || '{}');
+        const user = users[currentUser];
+        if(user){
+          document.getElementById('checkoutName').textContent = user.name || '';
+          document.getElementById('checkoutPhone').textContent = user.phone || '';
+          document.getElementById('checkoutAddress').textContent = user.address || '';
+        }
+      }
+
+      document.getElementById('placeOrderBtn')?.addEventListener('click', function(){
+        let name = document.getElementById('checkoutName').textContent || prompt('Full name');
+        let email = currentUser || prompt('Email');
+        let phone = document.getElementById('checkoutPhone').textContent || prompt('Phone');
+        let address = document.getElementById('checkoutAddress').textContent || prompt('Address');
+        let payment = document.getElementById('paymentMethod').value;
+        const orderDetails = {
+          name,
+          email,
+          phone,
+          address,
+          payment,
+          items: items.map(i=>({name: i.p.name, qty: i.qty})),
+          total: total,
+          status: 'Being prepared',
+          date: new Date().toISOString()
+        };
+       
+        const users = JSON.parse(localStorage.getItem('fdUsers') || '{}');
+        if (users[email]) {
+          users[email].orders = users[email].orders || [];
+          users[email].orders.push(orderDetails);
+          localStorage.setItem('fdUsers', JSON.stringify(users));
+          localStorage.setItem('fdCurrentUser', email); // Set as logged in
+        }
+        const isBuyNow = localStorage.getItem('fdBuyNow') !== null;
+        if (isBuyNow) {
+          localStorage.removeItem('fdBuyNow');
+        } else {
+          setCart([]);
+        }
+        document.getElementById('orderMsg').style.display='block';
+        setTimeout(function() {
+          window.location.href = 'order-confirmation.html';
+        }, 1200);
+      });
+    } else {
+      const p = PRODUCTS.find(x=>x.id===id) || PRODUCTS[0];
+      mount.innerHTML = `
+        <div class="card">
+          <div class="thumb"><img src="${p.img}" alt="${p.name}"></div>
+          <div>
+            <h2>${p.name}</h2>
+            <p class="muted">${p.desc}</p>
+            <h3 class="price">${money(p.price)}</h3>
+            <div style="display:flex;gap:10px;margin-top:10px">
+              <button class="btn primary" onclick="add(${p.id})">Add to Cart</button>
+              <button class="btn primary" onclick="buyNow(${p.id})">Buy Now</button>
+              <a class="btn ghost" href="index.html">Back</a>
+              <a class="btn ghost" href="product.html?view=checkout">Go to Checkout</a>
+            </div>
+            <h4 style="margin-top:15px">Ingredients</h4>
+            <ul class="ingredients">${p.ingredients.map(i=>`<li>${i}</li>`).join('')}</ul>
+            <h4 style="margin-top:15px">Rate this product</h4>
+            <div class="stars" id="ratingStars"></div>
+            
+            <h4 style="margin-top:15px">Customer Reviews</h4>
+            <div id="commentsSection"></div>
+            <form id="commentForm" style="margin-top:10px;display:grid;gap:8px">
+              <input type="text" id="commentName" placeholder="Your name" required>
+              <textarea id="commentText" placeholder="Write your comment..." required></textarea>
+              <button class="btn primary" type="submit">Post Comment</button>
+            </form>
+          </div>
+        </div>`;
+     
+      const starsDiv = document.getElementById("ratingStars");
+      const saved = localStorage.getItem("rating_"+p.id) || 0;
+      for(let i=1;i<=5;i++){
+        const s=document.createElement("span");
+        s.textContent="★";
+        s.className="star"+(i<=saved?" active":"");
+        s.onclick=()=>{ 
+          localStorage.setItem("rating_"+p.id,i);
+          document.querySelectorAll(".star").forEach((el,j)=>el.classList.toggle("active", j<i));
+        };
+        starsDiv.appendChild(s);
+      }
+
+      window.add = function(id){
+        const items = getCart();
+        const f = items.find(x=>x.id===id);
+        if(f) f.qty++;
+        else items.push({id,qty:1});
+        setCart(items);
+        alert('Added to cart!');
+      };
+      window.buyNow = function(id) {
+        
+        localStorage.setItem('fdBuyNow', JSON.stringify([{id, qty: 1}]));
+        window.location.href = "product.html?view=checkout&buynow=1";
+      };
+
+      function loadComments(productId){
+        return JSON.parse(localStorage.getItem("comments_"+productId) || "[]");
+      }
+      function saveComments(productId, comments){
+        localStorage.setItem("comments_"+productId, JSON.stringify(comments));
+      }
+      function renderComments(productId){
+        const section = document.getElementById("commentsSection");
+        const comments = loadComments(productId);
+        if(comments.length === 0){
+          section.innerHTML = `<p class="muted">No reviews yet. Be the first to comment!</p>`;
+        } else {
+          section.innerHTML = comments.map(c => `
+            <div style="border:1px solid rgba(148,163,184,.25);padding:10px;border-radius:10px;margin-bottom:10px">
+              <strong>${c.name}</strong>
+              <p style="margin:5px 0">${c.text}</p>
+              <small class="muted">${new Date(c.date).toLocaleString()}</small>
+            </div>
+          `).join('');
+        }
+      }
+      document.getElementById("commentForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        const name = document.getElementById("commentName").value.trim();
+        const text = document.getElementById("commentText").value.trim();
+        if(!name || !text) return;
+        const comments = loadComments(p.id);
+        comments.push({name, text, date: new Date().toISOString()});
+        saveComments(p.id, comments);
+        renderComments(p.id);
+        this.reset();
+      });
+      renderComments(p.id);
+    }
+
+    const currentUser = localStorage.getItem('fdCurrentUser');
+    if(currentUser && view === 'profile'){
+      const users = JSON.parse(localStorage.getItem('fdUsers') || '{}');
+      const user = users[currentUser];
+      if(user){
+        mount.innerHTML = `
+          <h2>Your Profile</h2>
+          <div class="card">
+            <div>
+              <strong>Name:</strong> ${user.name || ''}<br>
+              <strong>Email:</strong> ${currentUser}<br>
+              <strong>Phone:</strong> ${user.phone || ''}<br>
+              <strong>Address:</strong> ${user.address || ''}<br>
+            </div>
+          </div>
+          <div class="orders" style="margin-top:20px">
+            <h3>Your Orders</h3>
+            <div id="orderList"></div>
+            <button class="btn ghost" onclick="window.location.href='index.html'" style="margin-top:18px;">Back to Shop</button>
+          </div>
+        `;
+        if(user.orders && user.orders.length > 0){
+          const orderList = document.getElementById('orderList');
+          user.orders.forEach((order, index) => {
+            const orderDate = new Date(order.date).toLocaleString();
+            const orderItems = order.items.map(item => `${item.qty}x ${item.name}`).join(', ');
+            const orderStatus = order.status;
+            orderList.innerHTML += `
+              <div style="border:1px solid rgba(148,163,184,.25);padding:10px;border-radius:10px;margin-bottom:10px">
+                <div style="font-weight:700">Order #${index+1} - ${orderDate}</div>
+                <div style="margin:5px 0">${orderItems}</div>
+                <div style="font-weight:600;color:${orderStatus === 'Delivered' ? 'green' : 'orange'}">${orderStatus}</div>
+              </div>
+            `;
+          });
+        } else {
+          mount.querySelector('.orders').innerHTML += `<p class="muted" style="margin-top:10px">You have no orders yet.</p>`;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
+

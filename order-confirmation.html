@@ -1,0 +1,62 @@
+<!-- Add this HTML file as order-confirmation.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order Confirmation - YumRush</title>
+  <style>
+    body {
+      background: linear-gradient(180deg,#0b1224,#0f172a);
+      color: #222;
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .confirmation-container {
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 8px 32px rgba(34,197,94,0.15), 0 2px 24px rgba(0,0,0,0.10);
+      padding: 40px 32px;
+      max-width: 350px;
+      text-align: center;
+    }
+    .confirmation-container h1 {
+      color: #22c55e;
+      margin-bottom: 18px;
+      font-size: 2rem;
+    }
+    .confirmation-container p {
+      color: #333;
+      font-size: 1.15rem;
+      margin-bottom: 28px;
+    }
+    .confirmation-container button {
+      background: #22c55e;
+      color: #fff;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .confirmation-container button:hover {
+      background: #16a34a;
+    }
+  </style>
+</head>
+<body>
+  <div class="confirmation-container">
+    <h1>Thank You!</h1>
+    <p>Your order will be prepared.<br>
+    Please wait while we process your food.<br>
+    You can check your order status in your profile.</p>
+    <button onclick="window.location.href='profile.html'">Go to Profile</button>
+  </div>
+</body>
+</html>

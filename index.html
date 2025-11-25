@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>YumRush • Food Delivery</title>
+  <!-- (same styles as before) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* (copy your CSS exactly or keep the same styles) */
+    :root{
+      --bg:#feb47b; --card:#e7a074; --muted:#94a3b8; --text:#e5e7eb; --brand:#22c55e; --brand-2:#06b6d4; --danger:#ef4444; --shadow: 0 10px 30px rgba(0,0,0,.35); --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html, body { margin: 0; height: 100%; font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: var(--text); position: relative; background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1200&auto=format&fit=crop') no-repeat center center/cover; overflow-x: hidden; }
+    body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 0; pointer-events: none; }
+    body > * { position: relative; z-index: 1; }
+    a{color:inherit;text-decoration:none}
+    header{ position:sticky;top:0;z-index:60; backdrop-filter:saturate(1.2) blur(10px); background:rgba(15,23,42,.7); border-bottom:1px solid rgba(148,163,184,.15); }
+    .nav{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px 20px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
+    .brand .logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:grid;place-items:center;box-shadow:var(--shadow)}
+    .brand span{font-size:1.1rem}
+    .search{flex:1;display:flex;align-items:center;gap:10px}
+    .search input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(148,163,184,.25); background:#0b1224;color:var(--text);outline:none}
+    .search input::placeholder{color:var(--muted)}
+    .icon-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid rgba(148,163,184,.25);background:#0b1224;cursor:pointer}
+    .icon-btn span.badge{background:var(--brand);color:#001b0d;border-radius:999px;padding:0 8px;font-weight:700;margin-left:2px}
+    .hero{max-width:1200px;margin:22px auto 8px;display:grid;grid-template-columns:1.3fr .7fr;gap:18px;padding:0 20px}
+    .hero .panel{background:radial-gradient(1200px 600px at 20% -200px, rgba(34,197,94,.15), transparent), #0c1429;border:1px solid rgba(148,163,184,.15);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+    .grid{max-width:1200px;margin:10px auto 60px;padding:0 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    @media (max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:800px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:520px){.grid{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg,#0e1730,#0a1226);border:1px solid rgba(148,163,184,.15);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+    .thumb{aspect-ratio:5/3;background:#0b1224;display:grid;place-items:center;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
+    .card:hover .thumb img{transform:scale(1.05)}
+    .content{padding:16px}
+    .title{font-weight:700;margin:0 0 6px}
+    .desc{color:var(--muted);font-size:.95rem;line-height:1.4;margin-bottom:10px;height:42px;overflow:hidden}
+    .price-row{display:flex;align-items:center;justify-content:space-between}
+    .price{font-weight:800;font-size:1.05rem}
+    .pill{display:inline-flex;gap:8px}
+    .btn{border:0;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:700}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#051b13}
+    .btn.ghost{background:#0b1224;border:1px solid rgba(148,163,184,.25);color:var(--text)}
+    .pagination{max-width:1200px;margin:14px auto 30px;display:flex;gap:8px;justify-content:center;padding:0 20px}
+    .page-btn{padding:10px 12px;border-radius:10px;background:#0b1224;border:1px solid rgba(148,163,184,.25);cursor:pointer}
+    .page-btn.active{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#04150f;font-weight:800}
+    .drawer{position:fixed;top:0;right:-420px;width:380px;max-width:92vw;height:100%;background:#0b1224;border-left:1px solid rgba(148,163,184,.15);box-shadow:var(--shadow);z-index:70;display:flex;flex-direction:column;transition:right .35s ease}
+    .drawer.open{right:0}
+    .drawer header{position:sticky;top:0;background:#0b1224;border-bottom:1px solid rgba(148,163,184,.15)}
+    .drawer .items{flex:1;overflow:auto;padding:14px}
+    .cart-item{display:grid;grid-template-columns:60px 1fr auto;gap:10px;align-items:center;background:#0e1730;border:1px solid rgba(148,163,184,.15);border-radius:12px;padding:8px;margin-bottom:10px}
+    .cart-item img{width:60px;height:60px;object-fit:cover;border-radius:10px}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty button{width:26px;height:26px;border-radius:8px;border:1px solid rgba(148,163,184,.25);background:#081022;color:var(--text);cursor:pointer}
+    .drawer .footer{padding:14px;border-top:1px solid rgba(148,163,184,.15)}
+    input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--brand); }
+    .select-all-container { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid rgba(148,163,184,.15); margin-bottom: 10px; }
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,.8);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:90}
+    .modal.show{display:flex}
+    .modal .panel{width:min(560px,92vw);background:#0b1224;border:1px solid rgba(148,163,184,.2);border-radius:18px;box-shadow:var(--shadow);padding:20px}
+    .modal h2{margin:0 0 8px}
+    .modal p{margin:0 0 16px;color:var(--muted)}
+    .row{display:grid;gap:10px;margin:10px 0}
+    .row input{padding:12px 14px;border-radius:12px;border:1px solid rgba(148,163,184,.25);background:#0a1226;color:var(--text);outline:none}
+    .error{color:var(--danger);font-weight:700;display:none}
+    .locked{overflow:hidden}
+    footer{border-top:1px solid rgba(148,163,184,.15);padding:30px 20px;background:#0b1224}
+    .footer-wrap{max-width:1200px;margin:0 auto;display:grid;gap:18px;grid-template-columns:2fr 1fr}
+    @media (max-width:800px){.footer-wrap{grid-template-columns:1fr}}
+    .contact-card{background:#0e1730;border:1px solid rgba(148,163,184,.15);border-radius:18px;padding:18px}
+    .contact-card form{display:grid;gap:10px}
+    .contact-card input, .contact-card textarea{padding:12px 14px;border-radius:12px;border:1px solid rgba(148,163,184,.25);background:#0a1226;color:var(--text)}
+    .link{color:var(--brand)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <a class="brand" href="/"><div class="logo">🍽️</div><span>YumRush</span></a>
+      <div class="search"><input id="searchInput" placeholder="Search dishes (e.g., burger, sushi, pasta)…" /></div>
+      <button id="cartBtn" class="icon-btn" aria-label="Open cart">🛒<span class="badge" id="cartCount">0</span></button>
+      <button id="logoutBtn" class="icon-btn" aria-label="Log out" style="display:none;">➡️</button>
+      <button id="adminBtn" class="icon-btn" style="margin-left:10px;display:none;font-weight:bold;color:#22c55e;">Admin Panel</button>
+      <button id="profileBtn" class="icon-btn" style="margin-left:10px;font-weight:bold;color:#06b6d4;">My Profile</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="productGrid" class="grid" aria-live="polite"></div>
+    <nav id="pagination" class="pagination"></nav>
+  </main>
+
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <header class="nav" style="justify-content:space-between;align-items:center;">
+      <strong>Your Cart</strong>
+      <button class="icon-btn" id="closeDrawer">❎</button>
+    </header>
+    <div class="items" id="cartItems"></div>
+    <div class="footer">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <label style="display:flex;align-items:center;gap:8px"><input id="select-all" type="checkbox"> <span style="color:var(--text);font-weight:600">All</span></label>
+        <strong id="cartTotal" class="total">₱0.00</strong>
+      </div>
+       <button class="btn primary checkout-btn" style="display:block;text-align:center;width:100%" type="button">Check Out (0)</button>
+    </div>
+  </aside>
+
+  <div id="loginModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="panel">
+      <h2 id="loginTitle">Sign in to continue</h2>
+      <p>Use your account to continue.</p>
+      <div class="error" id="loginError">Invalid email or password. Try again.</div>
+      <div class="row"><input id="email" type="email" placeholder="Email" autocomplete="username" /></div>
+      <div class="row"><input id="password" type="password" placeholder="Password" autocomplete="current-password" /></div>
+      <div class="row" style="display:flex;gap:10px">
+        <button id="loginBtn" class="btn primary" style="flex:1">Sign In</button>
+        <button id="cancelLogin" class="btn ghost" style="flex:1">Cancel</button>
+      </div>
+      <p style="text-align:center;margin-top:10px;">
+        Don't have an account? <a href="/registration.html">Sign Up</a>
+      </p>
+      <small style="color:var(--muted)">You must be signed in to add items to cart or checkout.</small>
+    </div>
+  </div>
+
+  <!-- Checkout modal -->
+  <div id="checkoutModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div class="panel" style="width:min(520px,92vw);">
+      <h2 id="checkoutTitle">Checkout</h2>
+      <p>Please enter delivery details and choose a payment method.</p>
+
+      <div class="row"><input id="coName" type="text" placeholder="Full name" /></div>
+      <div class="row"><input id="coPhone" type="tel" placeholder="Phone number (e.g. +639...)"/></div>
+      <div class="row"><input id="coAddress" type="text" placeholder="Delivery address" /></div>
+
+      <div class="row" style="display:flex;gap:12px;align-items:center">
+        <label style="display:flex;align-items:center;gap:8px"><input type="radio" name="coPayment" value="cod" checked> Cash on Delivery</label>
+        <label style="display:flex;align-items:center;gap:8px"><input type="radio" name="coPayment" value="gcash"> GCash</label>
+      </div>
+
+      <div id="checkoutError" class="error" style="display:none;margin-top:6px">Please fill all fields and select items to order.</div>
+
+      <div class="row" style="display:flex;gap:10px;margin-top:14px">
+        <button id="confirmCheckoutBtn" class="btn primary" style="flex:1">Place Order</button>
+        <button id="cancelCheckoutBtn" class="btn ghost" style="flex:1">Cancel</button>
+      </div>
+      <small style="color:var(--muted);display:block;margin-top:10px">You will be redirected to order confirmation after placing the order.</small>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-wrap">
+      <div class="contact-card">
+        <h3>About YumRush</h3>
+        <p class="desc">We’re a neighborhood-first delivery service based in Borongan City, serving fresh, chef-made meals in under 30 minutes. Open daily 08:00–22:00.</p>
+        <p>📍 Brgy Maypandan, Borongan City • ☎️ (02) 555-0199 • ✉️ hello@yumrush.example</p>
+        <p>Follow updates on <a class="link" href="about.html" target="_blank" rel="noopener">@yumrush</a></p>
+      </div>
+      <div class="contact-card">
+        <h3>Contact Us</h3>
+        <form id="contactForm">
+          <input type="text" id="cName" placeholder="Your name" required>
+          <input type="email" id="cEmail" placeholder="Your email" required>
+          <textarea id="cMsg" rows="4" placeholder="Message" required></textarea>
+          <button class="btn primary" type="submit">Send message</button>
+          <div id="contactConfirm" style="display:none;color:var(--brand);font-weight:700">Thanks! We’ll be in touch soon.</div>
+        </form>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:12px;">
+      <button id="adminPanelBtn" style="background:#22c55e;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;">
+        Admin Panel
+      </button>
+    </div>
+  </footer>
+
+<script>
+/* ---------- Frontend logic (now uses backend APIs) ---------- */
+
+const PAGE_SIZE = 12;
+let currentPage = 1;
+let currentQuery = '';
+let productsCache = [];
+
+const productGrid = document.getElementById('productGrid');
+const pagination = document.getElementById('pagination');
+const searchInput = document.getElementById('searchInput');
+const cartBtn = document.getElementById('cartBtn');
+const drawer = document.getElementById('drawer');
+const closeDrawer = document.getElementById('closeDrawer');
+const cartItems = document.getElementById('cartItems');
+const cartCount = document.getElementById('cartCount');
+const cartTotal = document.getElementById('cartTotal');
+const loginModal = document.getElementById('loginModal');
+const loginBtn = document.getElementById('loginBtn');
+const cancelLogin = document.getElementById('cancelLogin');
+const loginError = document.getElementById('loginError');
+const emailEl = document.getElementById('email');
+const passEl = document.getElementById('password');
+const logoutBtn = document.getElementById('logoutBtn');
+
+const checkoutModal = document.getElementById('checkoutModal');
+const coName = document.getElementById('coName');
+const coPhone = document.getElementById('coPhone');
+const coAddress = document.getElementById('coAddress');
+const confirmCheckoutBtn = document.getElementById('confirmCheckoutBtn');
+const cancelCheckoutBtn = document.getElementById('cancelCheckoutBtn');
+
+const adminBtn = document.getElementById('adminBtn');
+const adminPanelBtn = document.getElementById('adminPanelBtn');
+
+let selectedItems = new Set();
+
+// helper fetch wrapper that includes credentials
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(url, Object.assign({ credentials: 'include', headers: { 'Content-Type': 'application/json' } }, opts));
+  const json = await res.json().catch(()=>({}));
+  if (!res.ok) throw json;
+  return json;
+}
+
+async function fetchProducts(page = 1, q = '') {
+  const res = await fetch(`/api/products?page=${page}&pageSize=${PAGE_SIZE}&q=${encodeURIComponent(q)}`, { credentials: 'include' });
+  const data = await res.json();
+  productsCache = data.products || [];
+  renderProducts(productsCache);
+  renderPagination(data.total || 0, data.page || 1);
+}
+
+function renderProducts(list) {
+  productGrid.innerHTML = '';
+  if (!list || list.length === 0) {
+    productGrid.innerHTML = '<div style="color:var(--muted);padding:20px">No products found.</div>';
+    return;
+  }
+  for (const p of list) {
+    const el = document.createElement('article');
+    el.className = 'card';
+    el.innerHTML = `
+      <div class="thumb"><img src="${p.img || 'images/placeholder.png'}" alt="${p.name}"></div>
+      <div class="content">
+        <h3 class="title">${p.name}</h3>
+        <p class="desc">${p.description || ''}</p>
+        <div class="price-row">
+          <div class="price">₱${Number(p.price).toFixed(2)}</div>
+          <div class="pill">
+            <a href="product.html?id=${p.id}" target="_blank" class="btn ghost">View</a>
+            <button class="btn primary" data-id="${p.id}">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    `;
+    productGrid.appendChild(el);
+
+    const addBtn = el.querySelector('button.primary');
+    addBtn.addEventListener('click', async () => {
+      try {
+        // ensure logged in
+        const me = await apiFetch('/api/me').catch(()=>({ user: null }));
+        if (!me.user) { showLoginModal(); return; }
+        await apiFetch('/api/cart/add', { method: 'POST', body: JSON.stringify({ id: p.id, qty: 1 }) });
+        await refreshCart();
+      } catch (err) {
+        console.error('Add to cart error', err);
+        alert(err.error || 'Failed to add to cart');
+      }
+    });
+  }
+}
+
+function renderPagination(total, page) {
+  pagination.innerHTML = '';
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (pages <= 1) return;
+  for (let i=1;i<=pages;i++){
+    const btn = document.createElement('button');
+    btn.className = 'page-btn' + (i===page ? ' active' : '');
+    btn.textContent = i;
+    btn.addEventListener('click', () => { currentPage = i; fetchProducts(currentPage, currentQuery); window.scrollTo({top:0,behavior:'smooth'}); });
+    pagination.appendChild(btn);
+  }
+}
+
+/* ---------- CART UI: loads cart from server session ---------- */
+
+async function refreshCart() {
+  try {
+    const j = await apiFetch('/api/cart');
+    const items = j.cart || [];
+    // fetch product details for items (map from productsCache or fetch product list)
+    const ids = items.map(it => it.id);
+    // Create map of product id -> product (use cached products to avoid another request)
+    const map = {};
+    productsCache.forEach(p=>map[p.id]=p);
+    // If some ids not in cache, fetch them via /api/products q param (simpler approach: call /api/products with pageSize large)
+    // For simplicity we will fetch product details for missing ids in one shot via /api/products?pageSize=100 and filter
+    if (!ids.every(id => map[id])) {
+      const data = await fetch(`/api/products?page=1&pageSize=200`, { credentials: 'include' }).then(r=>r.json());
+      data.products.forEach(p=>map[p.id]=p);
+    }
+
+    // render cart items
+    cartItems.innerHTML = '';
+    let totalAll = 0;
+    let count = 0;
+    for (const it of items) {
+      const p = map[it.id] || { name: 'Unknown', price: 0, img: 'images/placeholder.png' };
+      const subtotal = Number((p.price * it.qty).toFixed(2));
+      totalAll += subtotal;
+      count += it.qty;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'cart-item';
+      wrapper.style.display = 'grid';
+      wrapper.style.gridTemplateColumns = '32px 60px 1fr 80px';
+      wrapper.style.gap = '10px';
+      wrapper.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center">
+          <input type="checkbox" class="item-check" data-id="${it.id}" checked>
+        </div>
+        <div><img src="${p.img}" alt="${p.name}" style="width:60px;height:60px;object-fit:cover;border-radius:6px"></div>
+        <div>
+          <div style="font-weight:700;color:var(--text)">${p.name}</div>
+          <div class="qty" style="display:flex;align-items:center;gap:8px;margin-top:8px">
+            <button class="qty-minus btn ghost" data-id="${it.id}" data-delta="-1">-</button>
+            <span class="qty-value" style="min-width:28px;display:inline-block;text-align:center">${it.qty}</span>
+            <button class="qty-plus btn ghost" data-id="${it.id}" data-delta="1">+</button>
+            <button class="icon-btn remove-btn" data-id="${it.id}" style="margin-left:8px">Remove</button>
+          </div>
+        </div>
+        <div style="text-align:right"><div class="price" style="font-weight:800;color:var(--brand);">₱${subtotal.toFixed(2)}</div></div>
+      `;
+      cartItems.appendChild(wrapper);
+    }
+
+    cartCount.textContent = count;
+    cartTotal.textContent = '₱' + totalAll.toFixed(2);
+
+    // wire up qty and remove handlers
+    cartItems.querySelectorAll('.qty-minus, .qty-plus').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        const id = Number(btn.getAttribute('data-id'));
+        const delta = Number(btn.getAttribute('data-delta'));
+        // read current qty from UI
+        const qtySpan = btn.parentElement.querySelector('.qty-value');
+        let qty = Number(qtySpan.textContent || '1');
+        qty = Math.max(1, qty + delta);
+        await apiFetch('/api/cart/update', { method: 'POST', body: JSON.stringify({ id, qty }) });
+        await refreshCart();
+      });
+    });
+    cartItems.querySelectorAll('.remove-btn').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = Number(btn.getAttribute('data-id'));
+        await apiFetch('/api/cart/remove', { method: 'POST', body: JSON.stringify({ id }) });
+        await refreshCart();
+      });
+    });
+
+  } catch (err) {
+    console.error('refreshCart error', err);
+  }
+}
+
+/* ---------- AUTH UI ---------- */
+
+function showLoginModal() {
+  loginModal.classList.add('show');
+  document.body.classList.add('locked');
+}
+function hideLoginModal() {
+  loginModal.classList.remove('show');
+  document.body.classList.remove('locked');
+}
+
+loginBtn.addEventListener('click', async () => {
+  loginError.style.display = 'none';
+  const email = emailEl.value.trim();
+  const pass = passEl.value;
+  if (!email || !pass) { loginError.textContent = 'Missing fields'; loginError.style.display = 'block'; return; }
+  try {
+    const j = await apiFetch('/api/login', { method: 'POST', body: JSON.stringify({ email, pass }) });
+    hideLoginModal();
+    await refreshCart();
+    updateAuthUI();
+  } catch (err) {
+    loginError.textContent = err.error || 'Invalid email or password';
+    loginError.style.display = 'block';
+  }
+});
+
+cancelLogin.addEventListener('click', () => { hideLoginModal(); });
+
+logoutBtn.addEventListener('click', async () => {
+  await apiFetch('/api/logout', { method: 'POST' });
+  updateAuthUI();
+  await refreshCart();
+});
+
+async function updateAuthUI() {
+  try {
+    const j = await apiFetch('/api/me');
+    if (j.user) {
+      logoutBtn.style.display = 'inline-flex';
+      // optionally show name somewhere
+    } else {
+      logoutBtn.style.display = 'none';
+    }
+  } catch (err) {
+    console.warn('me err', err);
+    logoutBtn.style.display = 'none';
+  }
+}
+
+/* ---------- SEARCH / PAGINATION ---------- */
+
+searchInput.addEventListener('input', function(){
+  currentQuery = searchInput.value.trim();
+  currentPage = 1;
+  fetchProducts(currentPage, currentQuery);
+});
+
+/* ---------- CART DRAWER ---------- */
+cartBtn.addEventListener('click', async ()=>{ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); await refreshCart(); });
+closeDrawer.addEventListener('click', ()=>{ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); });
+
+/* ---------- CHECKOUT ---------- */
+
+document.addEventListener('click', function(e){
+  if (e.target && e.target.classList && e.target.classList.contains('checkout-btn')) {
+    openCheckoutModal();
+  }
+});
+
+function openCheckoutModal(){
+  // ensure logged in
+  apiFetch('/api/me').then(j => {
+    if (!j.user) { showLoginModal(); return; }
+    // prefill
+    coName.value = j.user.name || '';
+    coPhone.value = j.user.phone || '';
+    coAddress.value = j.user.address || '';
+    checkoutModal.classList.add('show');
+    document.body.classList.add('locked');
+  }).catch(()=>{ showLoginModal(); });
+}
+
+function closeCheckoutModal(){ checkoutModal.classList.remove('show'); document.body.classList.remove('locked'); }
+
+cancelCheckoutBtn.addEventListener('click', closeCheckoutModal);
+
+confirmCheckoutBtn.addEventListener('click', async () => {
+  const name = coName.value.trim();
+  const phone = coPhone.value.trim();
+  const address = coAddress.value.trim();
+  const payment = document.querySelector('input[name="coPayment"]:checked')?.value || 'cod';
+  if (!name || !phone || !address) {
+    document.getElementById('checkoutError').textContent = 'Please fill out name, phone and address.';
+    document.getElementById('checkoutError').style.display = 'block';
+    return;
+  }
+  try {
+    const j = await apiFetch('/api/checkout', { method: 'POST', body: JSON.stringify({ name, phone, address, paymentMethod: payment }) });
+    // on success redirect to confirmation or show a message
+    window.location.href = `/order-confirmation.html?order=${encodeURIComponent(j.orderId)}`;
+  } catch (err) {
+    console.error('checkout err', err);
+    alert(err.error || 'Failed to place order');
+  } finally {
+    closeCheckoutModal();
+    await refreshCart();
+  }
+});
+
+/* ---------- init ---------- */
+
+async function init(){
+  await fetchProducts(currentPage, currentQuery);
+  await refreshCart();
+  await updateAuthUI();
+  await checkAdminStatus();  // Add this line
+}
+
+init();
+
+const profileBtn = document.getElementById('profileBtn');
+
+profileBtn.addEventListener('click', async () => {
+  try {
+    const j = await apiFetch('/api/me');
+    if (j.user) {
+      window.location.href = '/profile.html';
+    } else {
+      showLoginModal();
+    }
+  } catch (err) {
+    showLoginModal();
+  }
+});
+
+async function checkAdminStatus() {
+  try {
+    const j = await apiFetch('/api/me');
+    if (j.user && j.user.email === 'admin@yumrush.com') {
+      adminBtn.style.display = 'inline-flex';
+    } else {
+      adminBtn.style.display = 'none';
+    }
+  } catch (err) {
+    adminBtn.style.display = 'none';
+  }
+}
+
+adminBtn.addEventListener('click', () => {
+  window.location.href = '/admin.html';
+});
+
+adminPanelBtn.addEventListener('click', () => {
+  window.location.href = '/admin.html';
+});
+
+</script>
+</body>
+</html>
